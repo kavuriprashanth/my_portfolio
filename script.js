@@ -1,228 +1,461 @@
+/**
+ * Portfolio Interactive JavaScript
+ * Prashanth Kumar Kavuri — Software Developer Portfolio
+ * Centered Top Navigation · Active Scrollspy · Grok-Ready Realistic Chatbot
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
-  const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => navbar && navbar.classList.toggle('scrolled', window.scrollY > 50));
-  const hamburger = document.querySelector('.hamburger'), navLinks = document.querySelector('.nav-links');
-  if (hamburger && navLinks) { hamburger.addEventListener('click', () => navLinks.classList.toggle('active')); document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('active'))) }
-  const toggle = document.getElementById('themeToggle');
-  if (toggle) toggle.addEventListener('click', () => document.body.classList.toggle('light-mode'));
-  const portrait = document.querySelector('.portrait');
-  if (portrait) { portrait.style.backgroundImage = "url('assets/profile-photo.svg')"; portrait.style.backgroundSize = 'cover'; portrait.style.backgroundPosition = 'center'; const ph = portrait.querySelector('.portrait-placeholder'); if (ph) ph.style.display = 'none' }
 
-  /* ── CURSOR GLOW ─────────────────────────────────────────── */
-  const cursorGlow = document.getElementById('cursor-glow');
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (cursorGlow && !prefersReducedMotion) {
-    let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-    const moveCursor = e => { cx = e.clientX; cy = e.clientY; };
-    const animateCursor = () => {
-      cursorGlow.style.left = cx + 'px';
-      cursorGlow.style.top = cy + 'px';
-      requestAnimationFrame(animateCursor);
-    };
-    document.addEventListener('mousemove', moveCursor, { passive: true });
-    requestAnimationFrame(animateCursor);
-  }
+  /* ── 1. THEME MANAGEMENT WITH LOCALSTORAGE ───────────────────── */
+  const themeToggle = document.getElementById('themeToggle');
+  const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-  /* ── FLOATING PARTICLES (canvas) ─────────────────────────── */
-  const canvas = document.getElementById('particles-canvas');
-  if (canvas && !prefersReducedMotion) {
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [];
-    const isLight = () => document.body.classList.contains('light-mode');
-    const resize = () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; };
-    resize();
-    window.addEventListener('resize', resize, { passive: true });
-    const rand = (a, b) => Math.random() * (b - a) + a;
-    const mkP = () => ({ x: rand(0, W), y: rand(0, H), r: rand(0.6, 1.8), vx: rand(-0.12, 0.12), vy: rand(-0.22, -0.06), alpha: rand(0.3, 0.85), dA: rand(0.003, 0.008) * (Math.random() < 0.5 ? 1 : -1) });
-    for (let i = 0; i < 55; i++) particles.push(mkP());
-    const drawP = () => {
-      ctx.clearRect(0, 0, W, H);
-      const col = isLight() ? '100,130,220' : '140,180,255';
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy; p.alpha += p.dA;
-        if (p.alpha <= 0.15 || p.alpha >= 0.9) p.dA *= -1;
-        if (p.y < -10) { p.y = H + 5; p.x = rand(0, W); }
-        if (p.x < -10) p.x = W + 5;
-        if (p.x > W + 10) p.x = -5;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${col},${p.alpha})`; ctx.fill();
-        if (p.r > 1.4) {
-          ctx.strokeStyle = `rgba(${col},${p.alpha * 0.45})`; ctx.lineWidth = 0.5;
-          ctx.beginPath(); ctx.moveTo(p.x - 4, p.y); ctx.lineTo(p.x + 4, p.y); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(p.x, p.y - 4); ctx.lineTo(p.x, p.y + 4); ctx.stroke();
-        }
-      });
-      requestAnimationFrame(drawP);
-    };
-    drawP();
-  }
-
-  /* ── SECTION FADE-UP (IntersectionObserver) ──────────────── */
-  if (!prefersReducedMotion) {
-    const fadeTargets = [
-      ...document.querySelectorAll('.glass-card'),
-      ...document.querySelectorAll('.project-card'),
-      ...document.querySelectorAll('.skill-card'),
-      ...document.querySelectorAll('.timeline-item'),
-      ...document.querySelectorAll('.section-title'),
-    ];
-    fadeTargets.forEach(el => el.classList.add('fx-fade-up'));
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('fx-visible'); obs.unobserve(e.target); } });
-    }, { threshold: 0.04 });
-    fadeTargets.forEach(el => obs.observe(el));
-  }
-
-  /* ── NAV ACTIVE-LINK HIGHLIGHTER ─────────────────────────── */
-  const sections = document.querySelectorAll('main section[id]');
-  const navAs = document.querySelectorAll('.nav-links a');
-  const updateActive = () => {
-    let current = '';
-    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
-    navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+  const applyTheme = (isDark) => {
+    if (isDark) {
+      document.documentElement.classList.add('dark-mode');
+      document.documentElement.classList.remove('light-mode');
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('light-mode');
+    } else {
+      document.documentElement.classList.add('light-mode');
+      document.documentElement.classList.remove('dark-mode');
+      document.body.classList.add('light-mode');
+      document.body.classList.remove('dark-mode');
+    }
   };
-  window.addEventListener('scroll', updateActive, { passive: true });
-  updateActive();
 
-  /* ── CERTIFICATIONS GALLERY & LIGHTBOX ───────────────────── */
-  const certsModal = document.getElementById('certsModal');
-  const viewAllCertsBtn = document.getElementById('viewAllCertsBtn');
-  const closeCertsModal = document.getElementById('closeCertsModal');
-
-  const certLightbox = document.getElementById('certLightbox');
-  const closeLightbox = document.getElementById('closeLightbox');
-  const lightboxImg = document.getElementById('lightboxImg');
-  const lightboxTitle = document.getElementById('lightboxTitle');
-  const lightboxMeta = document.getElementById('lightboxMeta');
-
-  if (viewAllCertsBtn && certsModal) {
-    viewAllCertsBtn.addEventListener('click', () => certsModal.classList.add('open'));
-  }
-  if (closeCertsModal && certsModal) {
-    closeCertsModal.addEventListener('click', () => certsModal.classList.remove('open'));
+  const savedTheme = localStorage.getItem('portfolio-theme');
+  if (savedTheme) {
+    applyTheme(savedTheme === 'dark');
+  } else {
+    applyTheme(prefersDarkScheme.matches);
   }
 
-  const setupLightboxTrigger = (trigger) => {
-    trigger.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const img = trigger.getAttribute('data-img');
-      const title = trigger.getAttribute('data-title');
-      const issuer = trigger.getAttribute('data-issuer');
-      const date = trigger.getAttribute('data-date');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const isCurrentlyDark = document.documentElement.classList.contains('dark-mode');
+      const nextIsDark = !isCurrentlyDark;
+      applyTheme(nextIsDark);
+      localStorage.setItem('portfolio-theme', nextIsDark ? 'dark' : 'light');
+    });
+  }
 
-      if (lightboxImg) {
-        // Use a generic placeholder or the actual image
-        lightboxImg.src = img;
-        // If image error, fallback to nothing/hide img
-        lightboxImg.onerror = () => { lightboxImg.style.display = 'none'; };
-        lightboxImg.onload = () => { lightboxImg.style.display = 'block'; };
+  /* ── 2. MOBILE TOP NAVIGATION & DROPDOWN ─────────────────────── */
+  const mobileHamburger = document.getElementById('mobileHamburger');
+  const navMenu = document.getElementById('navMenu');
+  const mobileNavBackdrop = document.getElementById('mobileNavBackdrop');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  const closeMobileNav = () => {
+    if (navMenu) navMenu.classList.remove('open');
+    if (mobileNavBackdrop) mobileNavBackdrop.classList.remove('active');
+    if (mobileHamburger) mobileHamburger.setAttribute('aria-expanded', 'false');
+  };
+
+  const openMobileNav = () => {
+    if (navMenu) navMenu.classList.add('open');
+    if (mobileNavBackdrop) mobileNavBackdrop.classList.add('active');
+    if (mobileHamburger) mobileHamburger.setAttribute('aria-expanded', 'true');
+  };
+
+  if (mobileHamburger) {
+    mobileHamburger.addEventListener('click', () => {
+      const isOpen = navMenu && navMenu.classList.contains('open');
+      if (isOpen) {
+        closeMobileNav();
+      } else {
+        openMobileNav();
       }
-      if (lightboxTitle) lightboxTitle.textContent = title;
-      if (lightboxMeta) lightboxMeta.textContent = `${issuer} · ${date}`;
-
-      if (certLightbox) certLightbox.classList.add('open');
-    });
-  };
-
-  document.querySelectorAll('.view-cert-btn').forEach(setupLightboxTrigger);
-  document.querySelectorAll('.view-cert-trigger').forEach(setupLightboxTrigger);
-
-  if (closeLightbox && certLightbox) {
-    closeLightbox.addEventListener('click', () => certLightbox.classList.remove('open'));
-  }
-
-  if (certsModal) {
-    certsModal.addEventListener('click', (e) => {
-      if (e.target === certsModal) certsModal.classList.remove('open');
     });
   }
-  if (certLightbox) {
-    certLightbox.addEventListener('click', (e) => {
-      if (e.target === certLightbox) certLightbox.classList.remove('open');
-    });
+
+  if (mobileNavBackdrop) {
+    mobileNavBackdrop.addEventListener('click', closeMobileNav);
   }
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      closeMobileNav();
+    });
+  });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      if (certsModal) certsModal.classList.remove('open');
-      if (certLightbox) certLightbox.classList.remove('open');
+      closeMobileNav();
+      if (chatWindow && chatWindow.classList.contains('open')) {
+        closeChatWindow();
+      }
     }
   });
 
+  /* ── 3. SCROLLSPY / ACTIVE NAV LINK HIGHLIGHTER ─────────────── */
+  const sections = document.querySelectorAll('.page-section[id]');
+  const updateActiveSection = () => {
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    let currentId = 'home';
 
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 130;
+      const sectionHeight = section.offsetHeight;
+      if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+        currentId = section.getAttribute('id');
+      }
+    });
 
-  const chatToggle = document.getElementById('chatbotToggle'), chatWindow = document.getElementById('chatWindow'), chatClose = document.getElementById('chatClose'), chatForm = document.getElementById('chatForm'), chatInput = document.getElementById('chatInput'), messages = document.getElementById('chatMessages');
-  const addMessage = (text, type) => { if (!messages) return; const d = document.createElement('div'); d.className = `chat-msg ${type}`; d.textContent = text; messages.appendChild(d); messages.scrollTop = messages.scrollHeight };
-  if (chatToggle) { chatToggle.addEventListener('click', () => chatWindow.classList.toggle('open')); if (chatClose) chatClose.addEventListener('click', () => chatWindow.classList.remove('open')) }
+    navLinks.forEach(link => {
+      const linkSection = link.getAttribute('data-section');
+      if (linkSection === currentId) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  };
 
-  // Portfolio-only assistant. Answers are deliberately restricted to resume/portfolio facts.
-  const KB = [
-    { k: ['hi', 'hii', 'hello', 'hey', 'helo', 'heyy', 'yo', 'good morning', 'good afternoon', 'good evening', 'good night'], a: "Hi! 👋 I'm Prashanth's portfolio assistant. I can help with his skills, projects, experience, education, certifications, resume, or contact details. What would you like to know?" },
-    { k: ['help', 'what can you do', 'what can i ask', 'what do you know', 'how can you help', 'options', 'topics'], a: "I can answer questions about Prashanth's profile, skills, projects, work experience, education, certifications, resume and contact details. I only use information available in his resume and portfolio." },
-    { k: ['name', 'full name', 'his name', 'what is his name', 'whats his name', 'who is prashanth', 'who is he', 'tell me his name'], a: "His name is Prashanth Kumar Kavuri. He is a B.Tech CSE (AI/ML) student in Hyderabad with hands-on experience developing secure full-stack applications using Java, Spring Boot, React and PostgreSQL." },
-    { k: ['tell me about him', 'about him', 'about prashanth', 'about prashanth kumar', 'profile', 'introduction', 'describe him', 'who is prashanth kumar kavuri', 'tell me about prashanth'], a: "Prashanth Kumar Kavuri is a B.Tech CSE (AI/ML) student in Hyderabad. His portfolio focuses on Java full-stack development, AI/ML, secure web applications, REST APIs, Spring Boot, React and PostgreSQL. He has internship experience at Infosys Springboard and projects including a Cloud Security Monitoring System and SpendSense." },
-    { k: ['is it me', 'is this me', 'am i prashanth', 'is prashanth me', 'my portfolio', 'is this my portfolio'], a: "Yes. This portfolio is for Prashanth Kumar Kavuri. It contains his education, skills, projects, experience, certifications and contact details." },
-    { k: ['age', 'how old', 'date of birth', 'dob', 'birthday', 'birth date'], a: "Prashanth's age or date of birth is not listed in his resume or portfolio, so I don't have that information." },
-    { k: ['graduation', 'graduated', 'graduation year', 'degree', 'btech', 'b tech', 'education', 'college', 'university', 'qualification', 'academic', 'academics', 'what did he study', 'what is he studying'], a: "He is pursuing a B.Tech in Computer Science and Engineering (AI/ML), 2023–2027, at Marri Laxman Reddy Institute of Technology and Management, Hyderabad." },
-    { k: ['branch', 'course', 'major', 'department', 'cse aiml', 'computer science', 'ai ml', 'aiml'], a: "His degree is B.Tech in Computer Science and Engineering (AI/ML), 2023–2027, at Marri Laxman Reddy Institute of Technology and Management." },
-    { k: ['skill', 'skills', 'technical skills', 'technologies', 'tech stack', 'programming', 'what are his skills', 'what skills does he have', 'what technologies does he know', 'tools he knows'], a: "His resume lists Java, Python, SQL; Spring Boot, Spring Security, Spring Data JPA, React and REST APIs; MySQL, PostgreSQL and Redis; Docker, Git, Maven, IntelliJ IDEA and Visual Studio Code; plus DSA, OOP and Software Engineering." },
-    { k: ['java', 'java skill', 'does he know java', 'spring boot', 'spring security', 'spring data jpa', 'react', 'rest api', 'rest apis'], a: "His technical stack includes Java, Spring Boot, Spring Security, Spring Data JPA, React and REST APIs." },
-    { k: ['python', 'sql', 'mysql', 'postgresql', 'postgres', 'redis', 'database', 'databases'], a: "His resume lists Python and SQL, with MySQL, PostgreSQL and Redis among his database technologies." },
-    { k: ['docker', 'git', 'maven', 'intellij', 'visual studio code', 'vscode', 'devops'], a: "His tools include Docker, Git, Maven, IntelliJ IDEA and Visual Studio Code." },
-    { k: ['dsa', 'data structures', 'oop', 'object oriented', 'software engineering'], a: "His core skills include Data Structures and Algorithms (DSA), Object-Oriented Programming (OOP) and Software Engineering." },
-    { k: ['soft skill', 'soft skills', 'problem solving', 'team', 'teamwork', 'communication', 'adaptability', 'analytical thinking'], a: "His listed soft skills are Problem Solving, Team Collaboration, Communication, Analytical Thinking and Adaptability." },
-    { k: ['experience', 'work experience', 'internship', 'internships', 'infosys', 'springboard', 'exprenice', 'experiance', 'experience details', 'tell me about his experience', 'where did he work', 'where has he worked'], a: "He worked as a Java Full Stack Developer Intern at Infosys Springboard from Jun 2026 to Aug 2026. He contributed to an enterprise security platform with 6+ modules, validated 20+ REST API endpoints, and participated in Agile sprints implementing and testing 15+ features." },
-    { k: ['infosys role', 'infosys internship', 'springboard internship', 'what did he do at infosys', 'what did he do in infosys'], a: "At Infosys Springboard, he worked as a Java Full Stack Developer Intern from Jun 2026 to Aug 2026, contributing to an enterprise security platform, validating 20+ REST API endpoints and implementing/testing 15+ features in Agile sprints." },
-    { k: ['internship duration', 'internship dates', 'when was his internship', 'when did he intern'], a: "His listed Java Full Stack Developer internship at Infosys Springboard was from Jun 2026 to Aug 2026." },
-    { k: ['project', 'projects', 'projects list', 'what projects', 'his projects', 'tell me about his projects', 'portfolio projects'], a: "His portfolio highlights two projects: a Cloud Security Monitoring System with Incident Management Assistance and SpendSense – Smart Expense Analysis Tracker." },
-    { k: ['sentinel', 'security project', 'cloud security', 'incident management', 'security monitoring', 'security system', 'cloud security monitoring', 'incident response', 'vulnerability management'], a: "His Cloud Security Monitoring System with Incident Management Assistance uses Java 21, Spring Boot 3.x, React, PostgreSQL and Redis in a microservices architecture. It uses Keycloak RBAC with JWT security and monitored 2,847+ assets, 847 vulnerabilities and 23 active incidents, with 99.99% uptime and immutable audit logs for PCI DSS compliance." },
-    { k: ['security project tech', 'security project technology', 'security stack', 'what technology security project'], a: "The security project uses Java 21, Spring Boot 3.x, React, PostgreSQL and Redis, with a microservices architecture and Keycloak RBAC/JWT security." },
-    { k: ['security project metrics', 'how many assets', 'how many vulnerabilities', 'active incidents', 'security numbers'], a: "The project information lists 2,847+ assets, 847 vulnerabilities, 23 active incidents and 99.99% uptime, with immutable audit logs for PCI DSS compliance." },
-    { k: ['spendsense', 'expense', 'expense tracker', 'finance', 'financial project', 'smart expense', 'expense analysis'], a: "SpendSense – Smart Expense Analysis Tracker is a full-stack expense analysis application built with React, Node.js, Express.js and Firebase Authentication. It includes Recharts analytics, CSV transaction import, budget tracking, PDF report generation and an AI-powered financial assistant for spending insights." },
-    { k: ['spendsense tech', 'spendsense stack', 'expense project technology', 'what is spendsense built with'], a: "SpendSense uses React, Node.js, Express.js and Firebase Authentication, with Recharts analytics, CSV import, budget tracking, PDF reports and an AI-powered financial assistant." },
-    { k: ['certification', 'certifications', 'nptel', 'mongodb', 'aws academy', 'pearson', 'certificates', 'credentials'], a: "Certifications listed on the resume include NPTEL Java, Pearson MePro Level 7, AWS Academy Cloud Foundations and MongoDB Associate Developer." },
-    { k: ['nptel details', 'programming in java', 'java certificate'], a: "He has an NPTEL Programming in Java certification from IIT Kharagpur." },
-    { k: ['aws certification', 'aws academy certification', 'cloud foundations'], a: "He has an AWS Academy Cloud Foundations certification." },
-    { k: ['mongodb certification', 'associate developer', 'mongodb associate'], a: "He has a MongoDB Associate Developer certification." },
-    { k: ['pearson', 'mepro', 'level 7'], a: "He has a Pearson MePro Level 7 Progressive certification." },
-    { k: ['contact', 'contact details', 'email', 'email id', 'mail', 'mail id', 'phone', 'phone number', 'linkedin', 'github', 'location', 'how can i contact him', 'how to contact', 'contact him', 'reach him', 'reach prashanth'], a: "You can contact Prashanth at prashanthkavuri786@gmail.com or +91 8498085542. He is based in Hyderabad. LinkedIn: linkedin.com/in/kavuriprashanth/ · GitHub: github.com/237y1a6697." },
-    { k: ['email address', 'his email', 'what is his email', 'what is his mail', 'give me his mail', 'give me his email', 'mail id please'], a: "Prashanth's email is prashanthkavuri786@gmail.com." },
-    { k: ['phone number', 'mobile number', 'his phone', 'give me his phone'], a: "Prashanth's listed phone number is +91 8498085542." },
-    { k: ['linkedin profile', 'linkedin url', 'linkedin link'], a: "His LinkedIn is linkedin.com/in/kavuriprashanth/." },
-    { k: ['github profile', 'github link', 'github url', 'code repository'], a: "His GitHub is github.com/237y1a6697." },
-    { k: ['resume', 'cv', 'download resume', 'resume details', 'cv details', 'what is in his resume'], a: "The portfolio includes a Download Resume option. I can summarize information contained in Prashanth's resume, including his education, skills, projects, experience and certifications." },
-    { k: ['resume download', 'where is resume', 'resume link'], a: "Use the Download Resume button in the portfolio to open Prashanth's resume." },
-    { k: ['should i hire', 'shoud i hire', 'hire him', 'hire prashanth', 'why hire', 'good candidate', 'candidate', 'should we hire', 'is he hireable', 'recommend hiring', 'why should i hire'], a: "Based on the resume and portfolio, Prashanth has hands-on Java full-stack experience with Spring Boot, React, PostgreSQL, REST APIs and security, plus AI/ML knowledge. His Infosys Springboard internship involved an enterprise security platform, 20+ REST API endpoints and 15+ features. Whether to hire him depends on the role and your evaluation process." },
-    { k: ['job role', 'role', 'looking for job', 'looking for internship', 'opportunity', 'open to work'], a: "His portfolio presents him as an AI/ML Engineer and Full Stack Developer, with a focus on Java full-stack development and secure web applications." },
-    { k: ['ai ml', 'artificial intelligence', 'machine learning', 'ai skills'], a: "His academic focus is Computer Science and Engineering (AI/ML), and his portfolio presents AI/ML alongside Java full-stack development." },
-    { k: ['full stack', 'fullstack', 'full stack developer', 'java full stack', 'developer'], a: "His portfolio presents him as an AI/ML Engineer and Full Stack Developer, with hands-on Java, Spring Boot, React, REST API and database experience." },
-    { k: ['location', 'where is he from', 'where does he live', 'city', 'hyderabad'], a: "He is based in Hyderabad, India." },
-    { k: ['strengths', 'what is he good at', 'what are his strengths'], a: "His resume and portfolio show strengths in Java full-stack development, secure application development, REST APIs, databases, problem solving, teamwork and analytical thinking." },
-    { k: ['why prashanth', 'why choose him', 'why choose prashanth', 'why him'], a: "His portfolio shows practical Java full-stack work, an enterprise security internship, security-focused project experience, AI/ML academic focus and certifications. A final hiring decision should still be based on the specific role and interview process." },
-    { k: ['thank you', 'thanks', 'thank', 'thx'], a: "You're welcome! 👋 If you need anything about Prashanth's resume or portfolio, just ask." },
-    { k: ['bye', 'goodbye', 'see you'], a: "Thanks for visiting Prashanth's portfolio! 👋" }
+  window.addEventListener('scroll', updateActiveSection, { passive: true });
+  updateActiveSection();
+
+  /* ── 4. RESUME DOWNLOAD TRIGGER LOGGING ─────────────────────── */
+  const downloadResumeBtn = document.getElementById('downloadResumeHeroBtn');
+  if (downloadResumeBtn) {
+    downloadResumeBtn.addEventListener('click', () => {
+      console.log('Downloading Prashanth Kumar Kavuri resume...');
+    });
+  }
+
+  /* ── 5. SUBTLE AMBIENT CANVAS PARTICLES ─────────────────────── */
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canvas = document.getElementById('particles-canvas');
+  if (canvas && !prefersReducedMotion) {
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    const particles = [];
+    const particleCount = 20;
+
+    const resize = () => {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    const rand = (min, max) => Math.random() * (max - min) + min;
+    const isDarkMode = () => document.documentElement.classList.contains('dark-mode');
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: rand(0, W),
+        y: rand(0, H),
+        r: rand(1.0, 2.0),
+        vx: rand(-0.04, 0.04),
+        vy: rand(-0.08, -0.02),
+        alpha: rand(0.1, 0.25),
+        dA: rand(0.002, 0.004) * (Math.random() < 0.5 ? 1 : -1)
+      });
+    }
+
+    const drawParticles = () => {
+      ctx.clearRect(0, 0, W, H);
+      const isDark = isDarkMode();
+      const rgb = isDark ? '148, 163, 184' : '37, 99, 235';
+
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha += p.dA;
+
+        if (p.alpha <= 0.05 || p.alpha >= 0.3) p.dA *= -1;
+        if (p.y < -10) { p.y = H + 5; p.x = rand(0, W); }
+        if (p.x < -10) p.x = W + 5;
+        if (p.x > W + 10) p.x = -5;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${rgb}, ${p.alpha * (isDark ? 0.8 : 0.4)})`;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(drawParticles);
+    };
+
+    drawParticles();
+  }
+
+  /* ── 6. REALISTIC CHATBOT (GROK API READY + LOCAL ENGINE) ───── */
+  const chatbotToggle = document.getElementById('chatbotToggle');
+  const chatWindow = document.getElementById('chatWindow');
+  const chatCloseBtn = document.getElementById('chatCloseBtn');
+  const chatMessages = document.getElementById('chatMessages');
+  const chatForm = document.getElementById('chatForm');
+  const chatInput = document.getElementById('chatInput');
+  const quickChips = document.querySelectorAll('.quick-chip');
+  const apiConfigToggle = document.getElementById('apiConfigToggle');
+  const grokApiDrawer = document.getElementById('grokApiDrawer');
+  const grokApiKeyInput = document.getElementById('grokApiKeyInput');
+  const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+  const chatEngineStatus = document.getElementById('chatEngineStatus');
+
+  // Load existing Grok API Key from localStorage
+  let grokApiKey = localStorage.getItem('grok_api_key') || '';
+  if (grokApiKeyInput && grokApiKey) {
+    grokApiKeyInput.value = grokApiKey;
+    if (chatEngineStatus) chatEngineStatus.textContent = 'Grok AI Enabled';
+  }
+
+  // Toggle API settings drawer
+  if (apiConfigToggle && grokApiDrawer) {
+    apiConfigToggle.addEventListener('click', () => {
+      grokApiDrawer.classList.toggle('open');
+    });
+  }
+
+  if (saveApiKeyBtn && grokApiKeyInput) {
+    saveApiKeyBtn.addEventListener('click', () => {
+      const key = grokApiKeyInput.value.trim();
+      grokApiKey = key;
+      if (key) {
+        localStorage.setItem('grok_api_key', key);
+        if (chatEngineStatus) chatEngineStatus.textContent = 'Grok AI Enabled';
+        appendChatMessage("Grok API Key saved! Live AI generation is now active.", 'bot');
+      } else {
+        localStorage.removeItem('grok_api_key');
+        if (chatEngineStatus) chatEngineStatus.textContent = 'Verified Resume Assistant';
+        appendChatMessage("API Key removed. Reverted to verified local resume engine.", 'bot');
+      }
+      if (grokApiDrawer) grokApiDrawer.classList.remove('open');
+    });
+  }
+
+  // Toggle chat window
+  const openChatWindow = () => {
+    if (chatWindow) chatWindow.classList.add('open');
+    if (chatbotToggle) chatbotToggle.classList.add('active');
+    setTimeout(() => { if (chatInput) chatInput.focus(); }, 150);
+  };
+
+  const closeChatWindow = () => {
+    if (chatWindow) chatWindow.classList.remove('open');
+    if (chatbotToggle) chatbotToggle.classList.remove('active');
+  };
+
+  if (chatbotToggle) {
+    chatbotToggle.addEventListener('click', () => {
+      const isOpen = chatWindow && chatWindow.classList.contains('open');
+      if (isOpen) {
+        closeChatWindow();
+      } else {
+        openChatWindow();
+      }
+    });
+  }
+
+  if (chatCloseBtn) {
+    chatCloseBtn.addEventListener('click', closeChatWindow);
+  }
+
+  // Resume Knowledge Base exclusively focused on Prashanth Kumar Kavuri
+  const RESUME_SYSTEM_PROMPT = `You are the interactive AI portfolio assistant for Prashanth Kumar Kavuri.
+Here are Prashanth's verified credentials and background:
+- Role Target: Software Developer / Java Developer Fresher Roles
+- Location: Hyderabad, India
+- Education: Bachelor of Technology in Computer Science and Engineering (AI & ML) at Marri Laxman Reddy Institute of Technology and Management (MLRITM), Hyderabad (Sep 2023 – May 2027), CGPA 8.2 / 10.
+- Honors: Appointed as a Google Student Ambassador.
+- Work Experience:
+  * Java Full Stack Developer Intern at Infosys Springboard – Virtual Internship 7.0 (Jun 2026 – Aug 2026).
+  * Implemented Role-Based Access Control (RBAC) and JWT authentication to secure application access for over 1,000 active users.
+  * Performed testing and validation across 20+ REST APIs, enhancing stability and reliability.
+  * Delivered 15+ backend features and services integrating PostgreSQL.
+  * Collaborated in Agile sprints using Git for version control and debugging.
+- Core Technical Stack:
+  * Languages: Java, Python, SQL, JavaScript
+  * Frameworks & Libraries: Spring Boot, Spring Security, Spring Data JPA, React, FastAPI
+  * Databases: MySQL, PostgreSQL, Redis
+  * Tools & DevOps: Git, Docker, Maven, IntelliJ IDEA, VS Code
+  * Concepts: DSA, OOP, REST APIs, Microservices, JWT & RBAC
+- Projects:
+  1. SentinelCore SecureOps: Cloud Security Monitoring System using a 2-service Spring Boot and React architecture, Keycloak RBAC/JWT, PostgreSQL, Redis, PCI DSS audit logging.
+  2. Quantum-Inspired Intelligent Traffic Route Optimization (In Development): Full-stack platform using React, Python, FastAPI, OpenStreetMap with Dijkstra, A*, and QIGA algorithms and XGBoost traffic prediction.
+  3. SpendSense: Smart Expense Analysis Tracker built with React, Node.js, Express, Firebase Authentication, and Recharts analytics with PDF reporting.
+  4. ShipTrack Pro: Shipment Tracking & Delivery Platform with React, Spring Boot, and PostgreSQL.
+- Certifications:
+  * NPTEL – Programming in Java (IIT Kharagpur, 2025)
+  * AWS Academy Cloud Foundations (2025)
+  * MongoDB Associate Developer (2025)
+  * Pearson MePro (2026)
+- Contact: Email: prashanthkavuri786@gmail.com, Phone: +91 8498085542, LinkedIn: linkedin.com/in/kavuriprashanth, GitHub: github.com/237y1a6697.
+
+Answer questions conversationally, accurately, and professionally as his assistant. Keep answers concise, clear, and recruiter-focused.`;
+
+  // Local knowledge base for instantaneous realistic fallback
+  const LOCAL_KB = [
+    {
+      k: ['hi', 'hello', 'hey', 'who are you', 'what can you do', 'help'],
+      a: "Hello! 👋 I'm Prashanth's portfolio assistant. You can ask me about his Java & Spring Boot expertise, Infosys Springboard internship, cloud security & routing projects, or education at MLRITM!"
+    },
+    {
+      k: ['skill', 'skills', 'tech stack', 'technologies', 'programming', 'languages'],
+      a: "Prashanth's technical stack includes:\n• Languages: Java, Python, SQL, JavaScript\n• Backend & Frameworks: Spring Boot, Spring Security, Spring Data JPA, React, FastAPI\n• Databases: PostgreSQL, MySQL, Redis\n• Tools: Git, Docker, Maven, IntelliJ IDEA, VS Code\n• Concepts: DSA, OOP, REST APIs, Microservices, JWT & RBAC."
+    },
+    {
+      k: ['java', 'spring', 'spring boot', 'backend'],
+      a: "Java and Spring Boot are Prashanth's primary specialties! He builds scalable enterprise services with Spring Security (RBAC/JWT), REST API architectures, and seamless PostgreSQL database persistence."
+    },
+    {
+      k: ['experience', 'work experience', 'internship', 'infosys', 'springboard'],
+      a: "Prashanth completed his internship as a Java Full Stack Developer Intern at Infosys Springboard (Jun–Aug 2026). Key highlights:\n• Implemented RBAC and JWT authentication for 1,000+ active users.\n• Tested and validated 20+ REST APIs to ensure high system stability.\n• Delivered 15+ backend features with PostgreSQL integration.\n• Collaborated in Agile sprints with Git-based version control."
+    },
+    {
+      k: ['project', 'projects', 'featured projects', 'what projects'],
+      a: "Prashanth has built 4 key projects:\n1. SentinelCore SecureOps (Cloud Security Monitoring System with Spring Boot & React)\n2. Quantum-Inspired Intelligent Traffic Route Optimization (Dijkstra, A*, QIGA, FastAPI & OSM)\n3. SpendSense (Smart Expense Tracker with React & Node.js)\n4. ShipTrack Pro (Shipment Tracking Platform)."
+    },
+    {
+      k: ['sentinel', 'security project', 'secureops', 'cloud security', 'incident'],
+      a: "SentinelCore SecureOps is a cloud security monitoring platform using a 2-service Spring Boot and React architecture. It features Keycloak RBAC with JWT authentication, 20+ secured REST APIs, and audit logging for PCI DSS compliance."
+    },
+    {
+      k: ['traffic', 'route', 'quantum', 'optimization', 'dijkstra', 'qiga'],
+      a: "Quantum-Inspired Intelligent Traffic Route Optimization is a full-stack platform using React, Python, FastAPI, and OpenStreetMap. It evaluates Dijkstra, A*, and QIGA multi-objective algorithms with XGBoost congestion prediction."
+    },
+    {
+      k: ['spendsense', 'expense', 'finance', 'tracker'],
+      a: "SpendSense is a smart personal finance tracker with interactive Recharts dashboards, CSV transaction import, budget tracking, PDF report export, and AI financial insights."
+    },
+    {
+      k: ['education', 'college', 'degree', 'cgpa', 'university', 'btech', 'mlritm', 'branch'],
+      a: "Prashanth is pursuing a B.Tech in Computer Science and Engineering (AI & ML) at Marri Laxman Reddy Institute of Technology and Management (MLRITM), Hyderabad (2023–2027) with a CGPA of 8.2 / 10."
+    },
+    {
+      k: ['certification', 'certifications', 'nptel', 'aws', 'mongodb', 'pearson', 'certificates'],
+      a: "Prashanth holds 4 verified certifications:\n1. NPTEL – Programming in Java (IIT Kharagpur, 2025)\n2. AWS Academy – Cloud Foundations (2025)\n3. MongoDB Associate Developer (2025)\n4. Pearson MePro (2026)."
+    },
+    {
+      k: ['contact', 'email', 'phone', 'reach', 'linkedin', 'github', 'hire', 'location'],
+      a: "You can reach Prashanth directly at:\n• Email: prashanthkavuri786@gmail.com\n• Phone: +91 8498085542\n• Location: Hyderabad, India\n• LinkedIn: linkedin.com/in/kavuriprashanth\n• GitHub: github.com/237y1a6697."
+    },
+    {
+      k: ['resume', 'cv', 'download resume'],
+      a: "You can download Prashanth's verified resume PDF directly using the 'Download Resume' button in the Hero section or the Contact section."
+    }
   ];
 
-  const fallback = "Sorry, I can only answer questions using information available in Prashanth's resume and portfolio. Try asking about his profile, skills, projects, experience, education, certifications, resume, or contact details.";
-  const typoMap = { cntact: 'contact', contactt: 'contact', graduaction: 'graduation', graduaton: 'graduation', gradution: 'graduation', exprenice: 'experience', experiance: 'experience', expereince: 'experience', expreience: 'experience', skil: 'skill', skils: 'skills', phne: 'phone', phon: 'phone', emal: 'email', mael: 'mail', cerification: 'certification', certifcation: 'certification', expreince: 'experience', eduction: 'education', educaton: 'education', experiance: 'experience', contct: 'contact' };
-  const norm = s => s.toLowerCase().replace(/what's/g, 'what is').replace(/who's/g, 'who is').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-  const fix = s => s.split(' ').map(w => typoMap[w] || w).join(' ');
+  const defaultBotReply = "I can answer questions regarding Prashanth's Java backend skills, Infosys Springboard internship, cloud security & routing projects, or education at MLRITM!";
 
-  function answer(question) {
-    const s = fix(norm(question));
-    if (!s) return fallback;
-    let best = null, bestScore = 0;
-    KB.forEach(item => item.k.forEach(key => {
-      const k = fix(norm(key)); let score = 0;
-      if (s === k) score = 10000 + k.length;
-      else if (s.includes(k)) score = 1000 + k.length;
-      else if (k.includes(s) && s.length >= 4) score = 700 + s.length;
-      else { const q = new Set(s.split(' ')), w = k.split(' '), m = w.filter(x => q.has(x)).length; if (m === w.length && m > 0) score = 500 + k.length; else if (m >= Math.min(2, w.length) && w.length <= 3) score = 80 + m * 10 }
-      if (score > bestScore) { bestScore = score; best = item }
-    }));
-    return best && bestScore >= 80 ? best.a : fallback;
+  const normalizeText = (text) => text.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+
+  const getLocalBotResponse = (question) => {
+    const qNorm = normalizeText(question);
+    if (!qNorm) return defaultBotReply;
+
+    let bestMatch = null;
+    let highestScore = 0;
+
+    for (const item of LOCAL_KB) {
+      for (const keyword of item.k) {
+        const kNorm = normalizeText(keyword);
+        let score = 0;
+
+        if (qNorm === kNorm) {
+          score = 1000 + kNorm.length;
+        } else if (qNorm.includes(kNorm)) {
+          score = 100 + kNorm.length;
+        } else {
+          const qWords = qNorm.split(' ');
+          const kWords = kNorm.split(' ');
+          const matches = kWords.filter(w => qWords.includes(w)).length;
+          if (matches === kWords.length && matches > 0) {
+            score = 50 + matches * 10;
+          }
+        }
+
+        if (score > highestScore) {
+          highestScore = score;
+          bestMatch = item.a;
+        }
+      }
+    }
+
+    return highestScore >= 50 ? bestMatch : defaultBotReply;
+  };
+
+  const appendChatMessage = (text, sender) => {
+    if (!chatMessages) return;
+    const msgEl = document.createElement('div');
+    msgEl.className = `chat-msg ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
+    msgEl.innerText = text;
+    chatMessages.appendChild(msgEl);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return msgEl;
+  };
+
+  // Call xAI Grok API if key is present
+  const callGrokApi = async (userPrompt) => {
+    const response = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${grokApiKey}`
+      },
+      body: JSON.stringify({
+        model: 'grok-beta',
+        messages: [
+          { role: 'system', content: RESUME_SYSTEM_PROMPT },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.3
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Grok API Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || getLocalBotResponse(userPrompt);
+  };
+
+  const handleUserMessage = async (text) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    appendChatMessage(trimmed, 'user');
+    if (chatInput) chatInput.value = '';
+
+    // Show typing status
+    const typingIndicator = appendChatMessage("Typing...", 'bot');
+
+    try {
+      if (grokApiKey) {
+        const grokReply = await callGrokApi(trimmed);
+        if (typingIndicator) typingIndicator.remove();
+        appendChatMessage(grokReply, 'bot');
+      } else {
+        // Fallback to local verified engine
+        setTimeout(() => {
+          if (typingIndicator) typingIndicator.remove();
+          const localReply = getLocalBotResponse(trimmed);
+          appendChatMessage(localReply, 'bot');
+        }, 220);
+      }
+    } catch (err) {
+      console.warn('Grok API invocation failed, falling back to local engine:', err);
+      if (typingIndicator) typingIndicator.remove();
+      const localReply = getLocalBotResponse(trimmed);
+      appendChatMessage(localReply, 'bot');
+    }
+  };
+
+  if (chatForm) {
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (chatInput) handleUserMessage(chatInput.value);
+    });
   }
-  const ask = q => { if (!q.trim()) return; addMessage(q, 'user'); setTimeout(() => addMessage(answer(q), 'bot'), 180) };
-  if (chatForm) chatForm.addEventListener('submit', e => { e.preventDefault(); const q = chatInput.value.trim(); chatInput.value = ''; ask(q) });
-  document.querySelectorAll('.chat-suggestions button').forEach(b => b.addEventListener('click', () => ask(b.dataset.q)));
+
+  quickChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const q = chip.getAttribute('data-question');
+      if (q) handleUserMessage(q);
+    });
+  });
+
 });
