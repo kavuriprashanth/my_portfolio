@@ -33,7 +33,7 @@ To run this project locally, simply clone the repo and use a local server:
 
 ```bash
 # Clone the repository
-git clone https://github.com/237y1a6697/my_portfolio.git
+git clone https://github.com/kavuriprashanth/my_portfolio.git
 
 # Navigate to the folder
 cd my_portfolio
@@ -46,7 +46,7 @@ npx http-server
 - **Email**: [prashanthkavuri786@gmail.com](mailto:prashanthkavuri786@gmail.com)
 - **Phone**: +91 8498085542
 - **LinkedIn**: [Prashanth Kavuri](https://www.linkedin.com/in/kavuriprashanth/)
-- **GitHub**: [@237y1a6697](https://github.com/237y1a6697)
+- **GitHub**: [@kavuriprashanth](https://github.com/kavuriprashanth)
 
 ---
 Designed and developed with ❤️ by **Prashanth Kumar Kavuri**.

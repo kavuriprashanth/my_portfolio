@@ -282,7 +282,7 @@ Here are Prashanth's verified credentials and background:
   * AWS Academy Cloud Foundations (2025)
   * MongoDB Associate Developer (2025)
   * Pearson MePro (2026)
-- Contact: Email: prashanthkavuri786@gmail.com, Phone: +91 8498085542, LinkedIn: linkedin.com/in/kavuriprashanth, GitHub: github.com/237y1a6697.
+- Contact: Email: prashanthkavuri786@gmail.com, Phone: +91 8498085542, LinkedIn: linkedin.com/in/kavuriprashanth, GitHub: github.com/kavuriprashanth.
 
 Answer questions conversationally, accurately, and professionally as his assistant. Keep answers concise, clear, and recruiter-focused.`;
 
@@ -330,7 +330,7 @@ Answer questions conversationally, accurately, and professionally as his assista
     },
     {
       k: ['contact', 'email', 'phone', 'reach', 'linkedin', 'github', 'hire', 'location'],
-      a: "You can reach Prashanth directly at:\n• Email: prashanthkavuri786@gmail.com\n• Phone: +91 8498085542\n• Location: Hyderabad, India\n• LinkedIn: linkedin.com/in/kavuriprashanth\n• GitHub: github.com/237y1a6697."
+      a: "You can reach Prashanth directly at:\n• Email: prashanthkavuri786@gmail.com\n• Phone: +91 8498085542\n• Location: Hyderabad, India\n• LinkedIn: linkedin.com/in/kavuriprashanth\n• GitHub: github.com/kavuriprashanth."
     },
     {
       k: ['resume', 'cv', 'download resume'],
