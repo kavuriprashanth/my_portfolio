@@ -259,7 +259,10 @@ Here are Prashanth's verified credentials and background:
 - Role Target: Software Developer / Java Developer Fresher Roles
 - Location: Hyderabad, India
 - Education: Bachelor of Technology in Computer Science and Engineering (AI & ML) at Marri Laxman Reddy Institute of Technology and Management (MLRITM), Hyderabad (Sep 2023 – May 2027), CGPA 8.2 / 10.
-- Honors: Appointed as a Google Student Ambassador.
+- Honors & Achievements:
+  * Google Student Ambassador — Appointed to represent Google initiatives and support student engagement within the campus community.
+  * Full Stack Development Intern at VELOOP REWARDS — Contributed to website development tasks, gaining practical exposure to GPT platforms, product research, and reward-based technology.
+  * College-Level Hackathon — Collaborated with a team to develop a software solution, applying programming, problem-solving, and teamwork skills.
 - Work Experience:
   * Java Full Stack Developer Intern at Infosys Springboard – Virtual Internship 7.0 (Jun 2026 – Aug 2026).
   * Implemented Role-Based Access Control (RBAC) and JWT authentication to secure application access for over 1,000 active users.
@@ -267,21 +270,18 @@ Here are Prashanth's verified credentials and background:
   * Delivered 15+ backend features and services integrating PostgreSQL.
   * Collaborated in Agile sprints using Git for version control and debugging.
 - Core Technical Stack:
-  * Languages: Java, Python, SQL, JavaScript
-  * Frameworks & Libraries: Spring Boot, Spring Security, Spring Data JPA, React, FastAPI
-  * Databases: MySQL, PostgreSQL, Redis
-  * Tools & DevOps: Git, Docker, Maven, IntelliJ IDEA, VS Code
-  * Concepts: DSA, OOP, REST APIs, Microservices, JWT & RBAC
+  * Languages: Java, SQL, Python, JavaScript
+  * Frameworks & Libraries: React.js, HTML5, CSS3, REST API Integration, FastAPI
+  * Backend: Spring Boot, Spring Security
+  * Databases: MySQL, PostgreSQL
+  * Tools & Platforms: Git, GitHub, VS Code, Docker
 - Projects:
-  1. SentinelCore SecureOps: Cloud Security Monitoring System using a 2-service Spring Boot and React architecture, Keycloak RBAC/JWT, PostgreSQL, Redis, PCI DSS audit logging.
-  2. Quantum-Inspired Intelligent Traffic Route Optimization (In Development): Full-stack platform using React, Python, FastAPI, OpenStreetMap with Dijkstra, A*, and QIGA algorithms and XGBoost traffic prediction.
-  3. SpendSense: Smart Expense Analysis Tracker built with React, Node.js, Express, Firebase Authentication, and Recharts analytics with PDF reporting.
-  4. ShipTrack Pro: Shipment Tracking & Delivery Platform with React, Spring Boot, and PostgreSQL.
+  1. Quantum-Inspired Intelligent Traffic Route Optimization (Sep 2026 – Oct 2026): Full-stack platform using React.js, Python, FastAPI, and OpenStreetMap across 5+ core modules, evaluating Dijkstra, A*, and QIGA algorithms with XGBoost congestion prediction.
+  2. Cloud Security Monitoring System (Jun 2026 – Aug 2026): 2-service Spring Boot and React architecture for continuous monitoring, securing 20+ REST APIs with RBAC and JWT authentication via Spring Security, incident management and audit logging.
 - Certifications:
+  * Pearson MePro (2026)
   * NPTEL – Programming in Java (IIT Kharagpur, 2025)
   * AWS Academy Cloud Foundations (2025)
-  * MongoDB Associate Developer (2025)
-  * Pearson MePro (2026)
 - Contact: Email: prashanthkavuri786@gmail.com, Phone: +91 8498085542, LinkedIn: linkedin.com/in/kavuriprashanth, GitHub: github.com/kavuriprashanth.
 
 Answer questions conversationally, accurately, and professionally as his assistant. Keep answers concise, clear, and recruiter-focused.`;
@@ -294,7 +294,7 @@ Answer questions conversationally, accurately, and professionally as his assista
     },
     {
       k: ['skill', 'skills', 'tech stack', 'technologies', 'programming', 'languages'],
-      a: "Prashanth's technical stack includes:\n• Languages: Java, Python, SQL, JavaScript\n• Backend & Frameworks: Spring Boot, Spring Security, Spring Data JPA, React, FastAPI\n• Databases: PostgreSQL, MySQL, Redis\n• Tools: Git, Docker, Maven, IntelliJ IDEA, VS Code\n• Concepts: DSA, OOP, REST APIs, Microservices, JWT & RBAC."
+      a: "Prashanth's technical stack includes:\n• Languages: Java, SQL, Python, JavaScript\n• Frameworks & Libraries: React.js, HTML5, CSS3, REST API Integration, FastAPI\n• Backend: Spring Boot, Spring Security\n• Databases: MySQL, PostgreSQL\n• Tools: Git, GitHub, VS Code, Docker."
     },
     {
       k: ['java', 'spring', 'spring boot', 'backend'],
@@ -306,27 +306,27 @@ Answer questions conversationally, accurately, and professionally as his assista
     },
     {
       k: ['project', 'projects', 'featured projects', 'what projects'],
-      a: "Prashanth has built 4 key projects:\n1. SentinelCore SecureOps (Cloud Security Monitoring System with Spring Boot & React)\n2. Quantum-Inspired Intelligent Traffic Route Optimization (Dijkstra, A*, QIGA, FastAPI & OSM)\n3. SpendSense (Smart Expense Tracker with React & Node.js)\n4. ShipTrack Pro (Shipment Tracking Platform)."
+      a: "Prashanth's featured projects include:\n1. Quantum-Inspired Intelligent Traffic Route Optimization (React, Python, FastAPI, Dijkstra, A*, QIGA, XGBoost)\n2. Cloud Security Monitoring System (Spring Boot, React, Spring Security, JWT, PostgreSQL, MySQL)."
     },
     {
       k: ['sentinel', 'security project', 'secureops', 'cloud security', 'incident'],
-      a: "SentinelCore SecureOps is a cloud security monitoring platform using a 2-service Spring Boot and React architecture. It features Keycloak RBAC with JWT authentication, 20+ secured REST APIs, and audit logging for PCI DSS compliance."
+      a: "Cloud Security Monitoring System is a platform using a 2-service Spring Boot and React architecture. It features Spring Security RBAC with JWT authentication, 20+ secured REST APIs, and audit logging to track security events."
     },
     {
       k: ['traffic', 'route', 'quantum', 'optimization', 'dijkstra', 'qiga'],
-      a: "Quantum-Inspired Intelligent Traffic Route Optimization is a full-stack platform using React, Python, FastAPI, and OpenStreetMap. It evaluates Dijkstra, A*, and QIGA multi-objective algorithms with XGBoost congestion prediction."
+      a: "Quantum-Inspired Intelligent Traffic Route Optimization is a full-stack platform using React.js, Python, FastAPI, and OpenStreetMap. It evaluates Dijkstra, A*, and QIGA multi-objective algorithms with XGBoost congestion prediction."
     },
     {
-      k: ['spendsense', 'expense', 'finance', 'tracker'],
-      a: "SpendSense is a smart personal finance tracker with interactive Recharts dashboards, CSV transaction import, budget tracking, PDF report export, and AI financial insights."
+      k: ['achievement', 'achievements', 'awards', 'hackathon', 'ambassador', 'veloop'],
+      a: "Prashanth's key honors include:\n• Google Student Ambassador (appointed to represent Google initiatives on campus)\n• Full Stack Development Intern at VELOOP REWARDS (practical exposure to GPT platforms and reward-based tech)\n• College-Level Hackathon (collaborative software solution and problem-solving)."
     },
     {
       k: ['education', 'college', 'degree', 'cgpa', 'university', 'btech', 'mlritm', 'branch'],
       a: "Prashanth is pursuing a B.Tech in Computer Science and Engineering (AI & ML) at Marri Laxman Reddy Institute of Technology and Management (MLRITM), Hyderabad (2023–2027) with a CGPA of 8.2 / 10."
     },
     {
-      k: ['certification', 'certifications', 'nptel', 'aws', 'mongodb', 'pearson', 'certificates'],
-      a: "Prashanth holds 4 verified certifications:\n1. NPTEL – Programming in Java (IIT Kharagpur, 2025)\n2. AWS Academy – Cloud Foundations (2025)\n3. MongoDB Associate Developer (2025)\n4. Pearson MePro (2026)."
+      k: ['certification', 'certifications', 'nptel', 'aws', 'pearson', 'certificates'],
+      a: "Prashanth holds 3 verified certifications:\n1. Pearson MePro (2026)\n2. NPTEL – Programming in Java (IIT Kharagpur, 2025)\n3. AWS Academy – Cloud Foundations (2025)."
     },
     {
       k: ['contact', 'email', 'phone', 'reach', 'linkedin', 'github', 'hire', 'location'],
